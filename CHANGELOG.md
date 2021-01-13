@@ -1,3 +1,12 @@
+# [3.5.0](https://github.com/getjerry/serverless-es-logs/compare/v3.4.1...v3.5.0) (2021-01-13)
+
+
+### Features
+
+* update integration test ([2728370](https://github.com/getjerry/serverless-es-logs/commit/2728370))
+* update package.json ([19736c6](https://github.com/getjerry/serverless-es-logs/commit/19736c6))
+* update version ([dd0ccda](https://github.com/getjerry/serverless-es-logs/commit/dd0ccda))
+
 ## [3.4.1](https://github.com/daniel-cottone/serverless-es-logs/compare/v3.4.0...v3.4.1) (2020-08-14)
 
 
