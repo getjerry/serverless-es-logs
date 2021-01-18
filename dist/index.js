@@ -78,14 +78,16 @@ class ServerlessEsLogsPlugin {
         }
     }
     formatCommandLineOpts() {
-        this.options.stage = this.options.stage
-            || this.serverless.service.provider.stage
-            || (this.serverless.service.defaults && this.serverless.service.defaults.stage)
-            || 'dev';
-        this.options.region = this.options.region
-            || this.serverless.service.provider.region
-            || (this.serverless.service.defaults && this.serverless.service.defaults.region)
-            || 'us-east-1';
+        this.options.stage =
+            this.options.stage ||
+                this.serverless.service.provider.stage ||
+                (this.serverless.service.defaults && this.serverless.service.defaults.stage) ||
+                'dev';
+        this.options.region =
+            this.options.region ||
+                this.serverless.service.provider.region ||
+                (this.serverless.service.defaults && this.serverless.service.defaults.region) ||
+                'us-east-1';
     }
     validatePluginOptions() {
         const { esLogs } = this.custom();
@@ -147,10 +149,7 @@ class ServerlessEsLogsPlugin {
             // Create subscription filter
             const subscriptionFilter = new utils_1.SubscriptionFilterBuilder()
                 .withDestinationArn({
-                'Fn::GetAtt': [
-                    this.logProcesserLogicalId,
-                    'Arn',
-                ],
+                'Fn::GetAtt': [this.logProcesserLogicalId, 'Arn'],
             })
                 .withFilterPattern(filterPattern)
                 .withLogGroupName(LogGroupName)
@@ -183,29 +182,20 @@ class ServerlessEsLogsPlugin {
             // Create permission for subscription filter
             const permission = new utils_1.LambdaPermissionBuilder()
                 .withFunctionName({
-                'Fn::GetAtt': [
-                    this.logProcesserLogicalId,
-                    'Arn',
-                ],
+                'Fn::GetAtt': [this.logProcesserLogicalId, 'Arn'],
             })
                 .withPrincipal({
                 'Fn::Sub': 'logs.${AWS::Region}.amazonaws.com',
             })
                 .withSourceArn({
-                'Fn::GetAtt': [
-                    logGroupLogicalId,
-                    'Arn',
-                ],
+                'Fn::GetAtt': [logGroupLogicalId, 'Arn'],
             })
                 .withDependsOn([this.logProcesserLogicalId, logGroupLogicalId])
                 .build();
             // Create subscription filter
             const subscriptionFilter = new utils_1.SubscriptionFilterBuilder()
                 .withDestinationArn({
-                'Fn::GetAtt': [
-                    this.logProcesserLogicalId,
-                    'Arn',
-                ],
+                'Fn::GetAtt': [this.logProcesserLogicalId, 'Arn'],
             })
                 .withFilterPattern(filterPattern)
                 .withLogGroupName(logGroupName)
@@ -236,38 +226,24 @@ class ServerlessEsLogsPlugin {
         const name = `${this.serverless.service.service}-${this.options.stage}-es-logs-plugin`;
         fs_extra_1.default.ensureDirSync(dirPath);
         fs_extra_1.default.copySync(path_1.default.resolve(__dirname, '../templates/code/logsToEs.js'), filePath);
-        this.serverless.service.functions[this.logProcesserName] = {
-            description: 'Serverless ES Logs Plugin',
-            environment: {
+        const customLogFunction = this.serverless.service.functions[this.logProcesserName];
+        this.serverless.service.functions[this.logProcesserName] = Object.assign(Object.assign({ description: 'Serverless ES Logs Plugin', environment: {
                 ES_ENDPOINT: endpoint,
                 ES_INDEX_PREFIX: index,
                 ES_INDEX_DATE_SEPARATOR: indexDateSeparator || this.defaultIndexDateSeparator,
                 ES_TAGS: tagsStringified,
-            },
-            vpc,
-            events: [],
-            handler,
-            memorySize: 512,
-            name,
-            package: {
+            }, vpc, events: [], handler, memorySize: 512, package: {
                 exclude: ['**'],
                 include: [`${this.logProcesserDir}/**`],
                 individually: true,
-            },
-            runtime: 'nodejs10.x',
-            timeout: 60,
-            tracing: false,
-        };
+            }, runtime: 'nodejs10.x', timeout: 60, tracing: false }, customLogFunction), { name });
     }
     patchLogProcesserRole() {
         const template = this.serverless.service.provider.compiledCloudFormationTemplate;
         // Update lambda dependencies
         template.Resources[this.logProcesserLogicalId].DependsOn.push('ServerlessEsLogsLambdaIAMRole');
         template.Resources[this.logProcesserLogicalId].Properties.Role = {
-            'Fn::GetAtt': [
-                'ServerlessEsLogsLambdaIAMRole',
-                'Arn',
-            ],
+            'Fn::GetAtt': ['ServerlessEsLogsLambdaIAMRole', 'Arn'],
         };
     }
     cleanupFiles() {
