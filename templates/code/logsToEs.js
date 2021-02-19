@@ -132,7 +132,7 @@ function transform(payload) {
 /**
  * Remove array fields from event data to reduce index fields size.
  */
-const MaxFieldLevel = 5;
+const MaxFieldLevel = 3;
 const clean = (data, level = 0) => {
     for (const key in data) {
         // Remove keys from data to prevent field explode
