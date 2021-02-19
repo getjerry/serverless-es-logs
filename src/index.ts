@@ -277,7 +277,7 @@ class ServerlessEsLogsPlugin {
       vpc,
       events: [],
       handler,
-      memorySize: 512,
+      memorySize: 256,
       package: {
         exclude: ['**'],
         include: [`${this.logProcesserDir}/**`],
