@@ -167,7 +167,9 @@ function buildSource(message, extractedFields) {
                     source['@' + key] = clean(JSON.parse(jsonSubString));
                 }
 
-                source[key] = (key === 'apigw_request_id') ? value.slice(1, value.length - 1) : value;
+                if(key === 'apigw_request_id'){
+                    source[key] = value.slice(1, value.length - 1) 
+                }
             }
         }
         return source;
